@@ -135,7 +135,7 @@ function calculateTimeFraction() {
   return rawTimeFraction - (1 / timeLimit) * (1 - rawTimeFraction)
 }
 
-let timerInterval: number = 0
+let timerInterval: any = null;
 
 const isPopupShown = ref(false);
 const popupContent = ref('Time to relax!');
