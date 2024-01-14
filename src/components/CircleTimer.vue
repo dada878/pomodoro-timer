@@ -22,7 +22,23 @@
       <p class="timer-tip" v-show="isRelaxing">Relaxing</p>
     </div>
     <div class="buttons-section">
-      <button :class="{'button-outline' :isStarted}" @click="startTimer">{{ buttonText }}</button>
+      <button
+        class="icon-button"
+        :class="{ 'button-outline': isStarted }"
+        @click="nextSession"
+      >
+        <font-awesome-icon icon="fa-solid fa-forward" />
+      </button>
+      <button class="timer-button" :class="{ 'button-outline': isStarted }" @click="startTimer">
+        {{ buttonText }}
+      </button>
+      <button
+        class="icon-button"
+        :class="{ 'button-outline': isStarted }"
+        @click="resetTimer"
+      >
+        <font-awesome-icon icon="rotate-right" />
+      </button>
     </div>
   </div>
 </template>
@@ -35,12 +51,13 @@
 .buttons-section {
   display: flex;
   justify-content: center;
+  gap: 1.5rem;
   align-items: center;
   margin-top: 2rem;
 }
 
 .button-outline {
-  background-color: transparent;
+  background-color: transparent !important;
   color: var(--color-primary);
 }
 
@@ -84,7 +101,9 @@
   stroke-linecap: round;
   transform: rotate(90deg);
   transform-origin: center;
-  transition: 1s linear all;
+  transition: 1s linear all,
+              350ms ease-in-out color;
+              
   fill-rule: nonzero;
   stroke: currentColor;
 }
@@ -93,7 +112,7 @@
   color: var(--color-primary);
 }
 
-button {
+.timer-button {
   border: 2px solid var(--color-primary);
   background-color: var(--color-primary);
   color: white;
@@ -102,50 +121,73 @@ button {
   border-radius: 5rem;
   width: 9rem;
   font-size: 1rem;
+  transition: border-color 350ms,
+              color 350ms,
+              background-color 350ms;
+}
+
+.icon-button {
+  border: 1.5px solid var(--color-primary);
+  background-color: transparent;
+  color: var(--color-primary);
+  outline: none;
+  padding: 0.5rem;
+  border-radius: 5rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  font-size: 1rem;
+  scale: 1.5;
+  opacity: v-bind(buttonOpacity);
+  transition: opacity 200ms,
+              border-color 350ms,
+              color 350ms;
+  pointer-events: v-bind(buttonPointerEvents);
 }
 </style>
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
-import sound from '../assets/sound.wav';
-import PopupWindow from '../components/PopupWindow.vue';
+import { ref, type Ref } from 'vue'
+import sound from '../assets/sound.wav'
+import PopupWindow from '../components/PopupWindow.vue'
 
-const WORK_TIME = 52;
-const BREAK_TIME = 17;
-const SECOND = 60;
-const FULL_DASH_ARRAY = 283;
+const WORK_TIME = 52
+const BREAK_TIME = 17
+const SECOND = 60
+const FULL_DASH_ARRAY = 283
 
-let timeLimit = WORK_TIME * SECOND;
-let timePassed = -1;
-let timeLeft = WORK_TIME * SECOND;
+let timeLimit = WORK_TIME * SECOND
+let timePassed = -1
+let timeLeft = WORK_TIME * SECOND
 
-const isRelaxing = ref(false);
-const isStarted = ref(false);
-const buttonText = ref('Start');
-const timerColor = ref('#4772f9');
-const circleDasharray: Ref<string> = ref(`${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`)
+const isRelaxing = ref(false)
+const isStarted = ref(false)
+const buttonText = ref('Start')
+const timerColor = ref('#4772f9')
+const circleDasharray: Ref<string> = ref(`${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`);
+const buttonOpacity = ref(1);
+const buttonPointerEvents = ref('auto');
 
-let sessionType = "work";
+let sessionType = 'work'
 
 function pauseTimer() {
-  clearInterval(timerInterval);
+  clearInterval(timerInterval)
 }
 
 function calculateTimeFraction() {
-  const rawTimeFraction = timeLeft / timeLimit;
+  const rawTimeFraction = timeLeft / timeLimit
   return rawTimeFraction - (1 / timeLimit) * (1 - rawTimeFraction)
 }
 
-let timerInterval: any = null;
+let timerInterval: any = null
 
-const isPopupShown = ref(false);
-const popupContent = ref('Time to relax!');
+const isPopupShown = ref(false)
+const popupContent = ref('Time to relax!')
 
 function showPopup(content: string) {
-  isPopupShown.value = true;
-  popupContent.value = content;
+  isPopupShown.value = true
+  popupContent.value = content
   setTimeout(() => {
-    isPopupShown.value = false;
-  }, 4000);
+    isPopupShown.value = false
+  }, 4000)
 }
 
 function startTimerInterval() {
@@ -154,15 +196,38 @@ function startTimerInterval() {
   }, 1000)
 }
 
+function resetTimer() {
+  pauseTimer()
+  buttonText.value = 'Start'
+  isStarted.value = false
+  buttonOpacity.value = 1;
+  buttonPointerEvents.value = 'auto';
+  initTimer()
+}
+
+function nextSession() {
+  pauseTimer()
+  buttonText.value = 'Start'
+  isStarted.value = false
+  buttonOpacity.value = 1;
+  buttonPointerEvents.value = 'auto';
+  sessionType = sessionType == 'work' ? 'break' : 'work'
+  initTimer()
+}
+
 function startTimer() {
   if (isStarted.value === false) {
     buttonText.value = 'Pause';
     isStarted.value = true;
+    buttonOpacity.value = 0.3;
+    buttonPointerEvents.value = 'none';
     startTimerInterval();
   } else {
-    buttonText.value = 'Start'
+    buttonText.value = 'Start';
     isStarted.value = false;
-    pauseTimer()
+    buttonOpacity.value = 1;
+    buttonPointerEvents.value = 'auto';
+    pauseTimer();
   }
 }
 
@@ -178,39 +243,39 @@ function formatTime(time: number) {
   return `${minutes}:${seconds}`
 }
 
-const timerLabel = ref(formatTime(timeLeft));
+const timerLabel = ref(formatTime(timeLeft))
 
 function initTimer() {
-  timePassed = -1;
-  timeLimit = sessionType === "work" ? WORK_TIME * SECOND : BREAK_TIME * SECOND;
-  timeLeft = timeLimit;
-  timerLabel.value = formatTime(timeLeft);
-  circleDasharray.value = `${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`;
-  isRelaxing.value = sessionType === "break";
-  timerColor.value = sessionType === "work" ? "#4772f9" : "#f9a847";
+  timePassed = -1
+  timeLimit = sessionType === 'work' ? WORK_TIME * SECOND : BREAK_TIME * SECOND
+  timeLeft = timeLimit
+  timerLabel.value = formatTime(timeLeft)
+  circleDasharray.value = `${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`
+  isRelaxing.value = sessionType === 'break'
+  timerColor.value = sessionType === 'work' ? '#4772f9' : '#f9a847'
 }
 
 function playSound() {
-  const audio = new Audio(sound);
-  audio.volume = 0.1;
-  audio.play();
+  const audio = new Audio(sound)
+  audio.volume = 0.1
+  audio.play()
 }
 
 function setCircleDasharray() {
-  timePassed = timePassed += 1;
-  timeLeft = timeLimit - timePassed;
-  timerLabel.value = formatTime(timeLeft);
+  timePassed = timePassed += 1
+  timeLeft = timeLimit - timePassed
+  timerLabel.value = formatTime(timeLeft)
   if (timeLeft == 0) {
-    pauseTimer();
-    buttonText.value = 'Start';
-    isStarted.value = false;
-    if (sessionType === "work") showPopup("You've got a pomodoro!");
-    else showPopup("Time to continue you work!");
-    sessionType = sessionType == "work" ? "break" : "work";
-    console.log(sessionType);
-    initTimer();
-    playSound();
+    pauseTimer()
+    buttonText.value = 'Start'
+    isStarted.value = false
+    if (sessionType === 'work') showPopup("You've got a pomodoro!")
+    else showPopup('Time to continue you work!')
+    sessionType = sessionType == 'work' ? 'break' : 'work'
+    console.log(sessionType)
+    initTimer()
+    playSound()
   }
-  circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`;
+  circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`
 }
 </script>

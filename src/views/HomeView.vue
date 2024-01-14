@@ -1,6 +1,5 @@
 <template>
-  <button @click="fullScreen" v-show="showFullScreenButton">Fullscreen</button>
-  <div class="timer-container">
+  <div @dblclick="toggleFullScreen" class="timer-container">
     <CircleTimer />
   </div>
 </template>
@@ -13,13 +12,12 @@
 }
 </style>
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
 import CircleTimer from '../components/CircleTimer.vue'
-
-const showFullScreenButton : Ref<Boolean> = ref(true);
-
-function fullScreen() {
-  showFullScreenButton.value = false;
-  document.documentElement.requestFullscreen();
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
 }
 </script>
