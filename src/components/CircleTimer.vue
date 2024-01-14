@@ -183,16 +183,16 @@ const isPopupShown = ref(false)
 const popupContent = ref('Time to relax!')
 
 function showPopup(content: string) {
-  isPopupShown.value = true
-  popupContent.value = content
+  isPopupShown.value = true;
+  popupContent.value = content;
   setTimeout(() => {
-    isPopupShown.value = false
+    isPopupShown.value = false;
   }, 4000)
 }
 
 function startTimerInterval() {
   timerInterval = setInterval(() => {
-    setCircleDasharray()
+    setCircleDasharray();
   }, 1000)
 }
 
@@ -273,8 +273,10 @@ function setCircleDasharray() {
     else showPopup('Time to continue you work!')
     sessionType = sessionType == 'work' ? 'break' : 'work'
     console.log(sessionType)
-    initTimer()
-    playSound()
+    initTimer();
+    playSound();
+    buttonOpacity.value = 1;
+    buttonPointerEvents.value = 'auto';
   }
   circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`
 }
