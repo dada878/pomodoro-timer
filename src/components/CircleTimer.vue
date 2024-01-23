@@ -149,8 +149,8 @@ import { ref, type Ref } from 'vue'
 import sound from '../assets/sound.wav'
 import PopupWindow from '../components/PopupWindow.vue'
 
-const WORK_TIME = 52
-const BREAK_TIME = 17
+const WORK_TIME = 25
+const BREAK_TIME = 7
 const SECOND = 60
 const FULL_DASH_ARRAY = 283
 
