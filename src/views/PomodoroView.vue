@@ -1,5 +1,6 @@
 <template>
-  <div class="timer">
+  <div class="timer-container">
+    <div class="timer">
     <PopupWindow :show-popup="isPopupShown" :content="popupContent" />
     <div class="base-timer">
       <svg class="timer" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -41,8 +42,17 @@
       </button>
     </div>
   </div>
+  </div>
 </template>
 <style>
+
+.timer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .timer {
   width: 90vw;
   --color-primary: v-bind(timerColor);
@@ -147,10 +157,13 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import sound from '../assets/sound.wav'
-import PopupWindow from '../components/PopupWindow.vue'
+import PopupWindow from '../components/PopupWindow.vue';
+import { usePomodoroStore } from '@/stores/pomodoro';
 
-const WORK_TIME = 25
-const BREAK_TIME = 7
+const pomodoroStore = usePomodoroStore();
+
+const WORK_TIME = pomodoroStore.workTime;
+const BREAK_TIME = pomodoroStore.breakTime;
 const SECOND = 60
 const FULL_DASH_ARRAY = 283
 

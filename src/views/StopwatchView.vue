@@ -1,3 +1,3 @@
 <template>
-  <p>About</p>
+    <p>Stopwatch</p>
 </template>
