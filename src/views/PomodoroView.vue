@@ -265,6 +265,7 @@ function initTimer() {
 }
 
 function playSound() {
+  if (!pomodoroStore.enableSound) return;
   const audio = new Audio(sound)
   audio.volume = 0.1
   audio.play()
@@ -281,7 +282,6 @@ function setCircleDasharray() {
     if (sessionType === 'work') showPopup("You've got a pomodoro!")
     else showPopup('Time to continue you work!')
     sessionType = sessionType == 'work' ? 'break' : 'work'
-    console.log(sessionType)
     initTimer();
     playSound();
     buttonOpacity.value = 1;

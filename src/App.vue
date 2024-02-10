@@ -11,7 +11,7 @@ import { RouterView, useRouter } from 'vue-router';
 const router = useRouter();
 
 const pages : Array<string> = [
-  'stopwatch',
+  // 'stopwatch',
   '/',
   'settings'
 ];
@@ -19,16 +19,18 @@ const pages : Array<string> = [
 let currentPageIndex = 1;
 
 function swipeLeft() {
-  if (currentPageIndex < pages.length - 1) {
+  // if (currentPageIndex < pages.length - 1) {
     currentPageIndex++;
+    currentPageIndex = currentPageIndex % pages.length;
     router.push(pages[currentPageIndex]);
-  }
+  // }
 }
 function swipeRight() {
-  if (currentPageIndex > 0) {
+  // if (currentPageIndex > 0) {
     currentPageIndex--;
+    currentPageIndex = (currentPageIndex % pages.length + pages.length) % pages.length;
     router.push(pages[currentPageIndex]);
-  }
+  // }
 }
 
 function toggleFullScreen() {

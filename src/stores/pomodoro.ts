@@ -1,19 +1,43 @@
 import { defineStore } from 'pinia';
+import { watch, ref, onMounted } from 'vue';
 
-export const usePomodoroStore = defineStore('pomodoro', {
-  state: () => ({
-    workTime: 30,  // 初始工作時間，以秒為單位
-    breakTime: 5,  // 初始休息時間，以秒為單位
-    timerRunning: false, // 計時器是否正在運行
-    timeRemaining: 30, // 剩餘時間，以秒為單位，初始為工作時間
-    config: {
-      // 其他配置選項，如果有的話
-    },
-  }),
-  getters: {
-    // 計算剩餘時間的百分比
-    timeRemainingPercent(): number {
-      return this.timeRemaining / this.workTime * 100;
-    },
-  },
+export const usePomodoroStore = defineStore('pomodoro', () => {
+  const workTime = ref(30);
+  const breakTime = ref(5);
+  const enableSound = ref(true);
+
+  const saveToLocalStorage = () => {
+    const data = {
+      workTime: workTime.value,
+      breakTime: breakTime.value,
+      enableSound: enableSound.value,
+    };
+    localStorage.setItem('pomodoro', JSON.stringify(data));
+  };
+
+  const loadFromLocalStorage = () => {
+    const data = localStorage.getItem('pomodoro');
+    if (data) {
+      const parsedData = JSON.parse(data);
+      workTime.value = parsedData.workTime || 25;
+      breakTime.value = parsedData.breakTime || 5;
+      enableSound.value = parsedData.enableSound || true;
+    }
+  };
+
+  onMounted(() => {
+    loadFromLocalStorage();
+  });
+
+  watch([workTime, breakTime, enableSound], () => {
+    saveToLocalStorage();
+  });
+
+  return {
+    workTime,
+    breakTime,
+    saveToLocalStorage,
+    loadFromLocalStorage,
+    enableSound,
+  };
 });
