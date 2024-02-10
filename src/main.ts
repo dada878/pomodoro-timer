@@ -16,7 +16,7 @@ library.add(faForward, faRotateRight);
 const app = createApp(App).component('font-awesome-icon', FontAwesomeIcon);
 
 app.use(createPinia());
-app.use(Vue3TouchEvents);
+app.use(Vue3TouchEvents as any); // TODO: Remove this when the library is updated
 app.use(router);
 
 app.mount('#app');
