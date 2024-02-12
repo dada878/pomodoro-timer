@@ -82,7 +82,6 @@
   transform: translate(-50%, -50%);
   margin: 0;
   font-size: 3rem;
-  font-family: sans-serif;
 }
 
 .timer-tip {
@@ -279,13 +278,14 @@ function setCircleDasharray() {
     pauseTimer()
     buttonText.value = 'Start'
     isStarted.value = false
-    if (sessionType === 'work') showPopup("You've got a pomodoro!")
-    else showPopup('Time to continue you work!')
+    if (sessionType === 'work' && pomodoroStore.showToast) showPopup("You've got a pomodoro!")
+    else if (pomodoroStore.showToast) showPopup('Time to continue you work!')
     sessionType = sessionType == 'work' ? 'break' : 'work'
     initTimer();
     playSound();
     buttonOpacity.value = 1;
     buttonPointerEvents.value = 'auto';
+    if (pomodoroStore.autoStart) startTimer();
   }
   circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`
 }

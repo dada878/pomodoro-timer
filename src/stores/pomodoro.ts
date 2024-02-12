@@ -1,3 +1,4 @@
+
 import { defineStore } from 'pinia';
 import { watch, ref, onMounted } from 'vue';
 
@@ -5,12 +6,16 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
   const workTime = ref(30);
   const breakTime = ref(5);
   const enableSound = ref(true);
+  const autoStart = ref(true);
+  const showToast = ref(true); // Added showToast configuration option
 
   const saveToLocalStorage = () => {
     const data = {
       workTime: workTime.value,
       breakTime: breakTime.value,
       enableSound: enableSound.value,
+      autoStart: autoStart.value,
+      showToast: showToast.value, // Added showToast value to the data object
     };
     localStorage.setItem('pomodoro', JSON.stringify(data));
   };
@@ -22,6 +27,8 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
       workTime.value = parsedData.workTime || 25;
       breakTime.value = parsedData.breakTime || 5;
       enableSound.value = parsedData.enableSound || true;
+      autoStart.value = parsedData.autoStart || false;
+      showToast.value = parsedData.showToast || true; // Added showToast value from the parsed data
     }
   };
 
@@ -29,7 +36,7 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
     loadFromLocalStorage();
   });
 
-  watch([workTime, breakTime, enableSound], () => {
+  watch([workTime, breakTime, enableSound, autoStart, showToast], () => {
     saveToLocalStorage();
   });
 
@@ -39,5 +46,7 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
     saveToLocalStorage,
     loadFromLocalStorage,
     enableSound,
+    autoStart,
+    showToast, // Added showToast to the returned object
   };
 });
