@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import PomodoroTimerView from '../views/PomodoroView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import StopwatchViewVue from '@/views/StopwatchView.vue';
+import AnalyticsViewVue from '@/views/AnalyticsView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,8 +21,13 @@ const router = createRouter({
       path: '/stopwatch',
       name: 'stopwatch',
       component: StopwatchViewVue
+    },
+    {
+      path: '/analytics',
+      name: 'analytics',
+      component: AnalyticsViewVue
     }
   ]
 })
 
-export default router
+export default router;

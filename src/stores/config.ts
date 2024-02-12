@@ -2,12 +2,13 @@
 import { defineStore } from 'pinia';
 import { watch, ref, onMounted } from 'vue';
 
-export const usePomodoroStore = defineStore('pomodoro', () => {
+export const useConfig = defineStore('config', () => {
   const workTime = ref(30);
   const breakTime = ref(5);
   const enableSound = ref(true);
   const autoStart = ref(true);
-  const showToast = ref(true); // Added showToast configuration option
+  const showToast = ref(true);
+  const hideButtons = ref(false);
 
   const saveToLocalStorage = () => {
     const data = {
@@ -15,20 +16,22 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
       breakTime: breakTime.value,
       enableSound: enableSound.value,
       autoStart: autoStart.value,
-      showToast: showToast.value, // Added showToast value to the data object
+      showToast: showToast.value,
+      hideButtons: hideButtons.value,
     };
-    localStorage.setItem('pomodoro', JSON.stringify(data));
+    localStorage.setItem('config', JSON.stringify(data));
   };
 
   const loadFromLocalStorage = () => {
-    const data = localStorage.getItem('pomodoro');
+    const data = localStorage.getItem('config');
     if (data) {
       const parsedData = JSON.parse(data);
       workTime.value = parsedData.workTime || 25;
       breakTime.value = parsedData.breakTime || 5;
       enableSound.value = parsedData.enableSound || true;
       autoStart.value = parsedData.autoStart || false;
-      showToast.value = parsedData.showToast || true; // Added showToast value from the parsed data
+      showToast.value = parsedData.showToast || true;
+      hideButtons.value = parsedData.hideButtons || false;
     }
   };
 
@@ -36,7 +39,7 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
     loadFromLocalStorage();
   });
 
-  watch([workTime, breakTime, enableSound, autoStart, showToast], () => {
+  watch([workTime, breakTime, enableSound, autoStart, showToast, hideButtons], () => {
     saveToLocalStorage();
   });
 
@@ -47,6 +50,7 @@ export const usePomodoroStore = defineStore('pomodoro', () => {
     loadFromLocalStorage,
     enableSound,
     autoStart,
-    showToast, // Added showToast to the returned object
+    showToast,
+    hideButtons
   };
 });

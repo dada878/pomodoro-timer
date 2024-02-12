@@ -1,52 +1,91 @@
 <template>
-  <div class="setting-container">
-    <h2>Settings</h2>
-    <div class="input-container">
-      <label>Work time</label>
-      <input type="number" :max="24 * 60" :min="1" v-model="workTime" />
-    </div>
-    <div class="input-container">
-      <label>Break time</label>
-      <input type="number" :max="24 * 60" :min="1" v-model="breakTime" />
-    </div>
-    <div class="input-container">
-      <label>Enable sound</label>
-      <div>
-        <label class="switch">
-        <input type="checkbox" v-model="enableSound" />
-        <span class="slider round"></span>
-      </label>
-      </div>
-    </div>
-    <div class="input-container">
-      <label>Auto start</label>
-      <div>
-        <label class="switch">
-        <input type="checkbox" v-model="autoStart" />
-        <span class="slider round"></span>
-      </label>
-      </div>
-    </div>
-    <div class="input-container">
-      <label>Show toast message</label>
-      <div>
-        <label class="switch">
-        <input type="checkbox" v-model="showToast" />
-        <span class="slider round"></span>
-      </label>
+  <div>
+    <div class="container">
+      <div class="setting-container">
+        <h2>General</h2>
+        <div class="input-container">
+          <label>Work time</label>
+          <input type="number" :max="24 * 60" :min="1" v-model="workTime" />
+        </div>
+        <div class="input-container">
+          <label>Break time</label>
+          <input type="number" :max="24 * 60" :min="1" v-model="breakTime" />
+        </div>
+        <div class="input-container">
+          <label>Enable sound</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="enableSound" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <div class="input-container">
+          <label>Auto start</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="autoStart" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <div class="input-container">
+          <label>Show toast message</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="showToast" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <h2>Appearance</h2>
+        <div class="input-container">
+          <label>Dark mode</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="hideButtons" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <div class="input-container">
+          <label>Hide reset and skip button</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="hideButtons" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+        <h2>Advance</h2>
+        <div class="input-container">
+          <label>Fast mode</label>
+          <div>
+            <label class="switch">
+              <input type="checkbox" v-model="hideButtons" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
 .setting-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1rem;
   color: white;
-  height: 100%;
   padding: 0rem 2rem;
 
   .input-container {
@@ -56,7 +95,7 @@
     gap: 0.5rem;
   }
 
-  input[type="number"] {
+  input[type='number'] {
     padding: 0.5rem;
     background-color: #5e5e5eba;
     color: white;
@@ -64,7 +103,6 @@
     border: none;
     width: 3rem;
   }
-
 
   label {
     color: white;
@@ -86,7 +124,6 @@
 
   .slider {
     position: absolute;
-    cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
@@ -132,60 +169,107 @@
 </style>
 
 <script lang="ts" setup>
-import { usePomodoroStore } from '@/stores/pomodoro';
-import { ref, watch } from 'vue';
+import { useConfig } from '@/stores/config'
+import { ref, watch } from 'vue'
 
 // get the store
-const pomodoroStore = usePomodoroStore();
+const pomodoroStore = useConfig()
 
 // create local state for workTime, breakTime, enableSound, and autoStart
-const workTime = ref(pomodoroStore.workTime);
-const breakTime = ref(pomodoroStore.breakTime);
-const enableSound = ref(pomodoroStore.enableSound);
-const autoStart = ref(pomodoroStore.autoStart);
-const showToast = ref(pomodoroStore.showToast);
+const workTime = ref(pomodoroStore.workTime)
+const breakTime = ref(pomodoroStore.breakTime)
+const enableSound = ref(pomodoroStore.enableSound)
+const autoStart = ref(pomodoroStore.autoStart)
+const showToast = ref(pomodoroStore.showToast)
+const hideButtons = ref(pomodoroStore.hideButtons)
 
-watch(() => showToast.value, (newVal) => {
-  pomodoroStore.showToast = newVal;
-});
+watch(
+  () => hideButtons.value,
+  (newVal) => {
+    pomodoroStore.hideButtons = newVal
+  }
+)
 
-watch(() => pomodoroStore.showToast, (newVal) => {
-  showToast.value = newVal;
-});
+watch(
+  () => pomodoroStore.hideButtons,
+  (newVal) => {
+    hideButtons.value = newVal
+  }
+)
 
-watch(() => enableSound.value, (newVal) => {
-  pomodoroStore.enableSound = newVal;
-});
+watch(
+  () => showToast.value,
+  (newVal) => {
+    pomodoroStore.showToast = newVal
+  }
+)
 
-watch(() => pomodoroStore.enableSound, (newVal) => {
-  enableSound.value = newVal;
-});
+watch(
+  () => pomodoroStore.showToast,
+  (newVal) => {
+    showToast.value = newVal
+  }
+)
 
-watch(() => autoStart.value, (newVal) => {
-  pomodoroStore.autoStart = newVal;
-});
+watch(
+  () => enableSound.value,
+  (newVal) => {
+    pomodoroStore.enableSound = newVal
+  }
+)
 
-watch(() => pomodoroStore.autoStart, (newVal) => {
-  autoStart.value = newVal;
-});
+watch(
+  () => pomodoroStore.enableSound,
+  (newVal) => {
+    enableSound.value = newVal
+  }
+)
+
+watch(
+  () => autoStart.value,
+  (newVal) => {
+    pomodoroStore.autoStart = newVal
+  }
+)
+
+watch(
+  () => pomodoroStore.autoStart,
+  (newVal) => {
+    autoStart.value = newVal
+  }
+)
 
 // watch for changes in the store and update the local state
-watch(() => pomodoroStore.workTime, (newVal) => {
-  workTime.value = newVal;
-});
+watch(
+  () => pomodoroStore.workTime,
+  (newVal) => {
+    workTime.value = newVal
+  }
+)
 
 // watch for changes in the local state and update the store
-watch(() => workTime.value, (newVal) => {
-  pomodoroStore.workTime = newVal;
-});
+watch(
+  () => workTime.value,
+  (newVal) => {
+    pomodoroStore.workTime = newVal
+  }
+)
 
 // watch for changes in the store and update the local state
-watch(() => pomodoroStore.breakTime, (newVal) => {
-  breakTime.value = newVal;
-});
+watch(
+  () => pomodoroStore.breakTime,
+  (newVal) => {
+    breakTime.value = newVal
+  }
+)
 
 // watch for changes in the local state and update the store
-watch(() => breakTime.value, (newVal) => {
-  pomodoroStore.breakTime = newVal;
-});
-</script>4772f9
+watch(
+  () => breakTime.value,
+  (newVal) => {
+    pomodoroStore.breakTime = newVal
+  }
+)
+</script>
+4772f9
+@/stores/config

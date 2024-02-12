@@ -1,47 +1,51 @@
 <template>
-  <div class="timer-container">
-    <div class="timer">
-    <PopupWindow :show-popup="isPopupShown" :content="popupContent" />
-    <div class="base-timer">
-      <svg class="timer" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <g class="timer-circle">
-          <circle class="timer-elapsed" cx="50" cy="50" r="45"></circle>
-          <path
-            id="base-timer-path-remaining"
-            :stroke-dasharray="circleDasharray"
-            class="timer-remaining arc"
-            d="
-              M 50, 50
-              m -45, 0
-              a 45,45 0 1,0 90,0
-              a 45,45 0 1,0 -90,0
-            "
-          ></path>
-        </g>
-      </svg>
-      <p class="timer-label">{{ timerLabel }}</p>
-      <p class="timer-tip" v-show="isRelaxing">Relaxing</p>
+  <div>
+    <div class="timer-container">
+      <div class="timer">
+      <PopupWindow :show-popup="isPopupShown" :content="popupContent" />
+      <div class="base-timer">
+        <svg class="timer" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g class="timer-circle">
+            <circle class="timer-elapsed" cx="50" cy="50" r="45"></circle>
+            <path
+              id="base-timer-path-remaining"
+              :stroke-dasharray="circleDasharray"
+              class="timer-remaining arc"
+              d="
+                M 50, 50
+                m -45, 0
+                a 45,45 0 1,0 90,0
+                a 45,45 0 1,0 -90,0
+              "
+            ></path>
+          </g>
+        </svg>
+        <p class="timer-label">{{ timerLabel }}</p>
+        <p class="timer-tip" v-show="isRelaxing">Relaxing</p>
+      </div>
+      <div class="buttons-section">
+        <button
+          class="icon-button"
+          :class="{ 'button-outline': isStarted }"
+          @click="nextSession"
+          v-show="!hideButtons"
+        >
+          <font-awesome-icon icon="fa-solid fa-forward" />
+        </button>
+        <button class="timer-button" :class="{ 'button-outline': isStarted }" @click="startTimer">
+          {{ buttonText }}
+        </button>
+        <button
+          class="icon-button"
+          :class="{ 'button-outline': isStarted }"
+          @click="resetTimer"
+          v-show="!hideButtons"
+        >
+          <font-awesome-icon icon="rotate-right" />
+        </button>
+      </div>
     </div>
-    <div class="buttons-section">
-      <button
-        class="icon-button"
-        :class="{ 'button-outline': isStarted }"
-        @click="nextSession"
-      >
-        <font-awesome-icon icon="fa-solid fa-forward" />
-      </button>
-      <button class="timer-button" :class="{ 'button-outline': isStarted }" @click="startTimer">
-        {{ buttonText }}
-      </button>
-      <button
-        class="icon-button"
-        :class="{ 'button-outline': isStarted }"
-        @click="resetTimer"
-      >
-        <font-awesome-icon icon="rotate-right" />
-      </button>
     </div>
-  </div>
   </div>
 </template>
 <style>
@@ -50,7 +54,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
+  opacity: v-bind(darkCover);
 }
 
 .timer {
@@ -157,9 +163,11 @@
 import { ref, type Ref } from 'vue'
 import sound from '../assets/sound.wav'
 import PopupWindow from '../components/PopupWindow.vue';
-import { usePomodoroStore } from '@/stores/pomodoro';
+import { useConfig } from '@/stores/config';
+import { useDatabase } from '@/stores/database';
 
-const pomodoroStore = usePomodoroStore();
+const pomodoroStore = useConfig();
+const database = useDatabase();
 
 const WORK_TIME = pomodoroStore.workTime;
 const BREAK_TIME = pomodoroStore.breakTime;
@@ -177,8 +185,15 @@ const timerColor = ref('#4772f9')
 const circleDasharray: Ref<string> = ref(`${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`);
 const buttonOpacity = ref(1);
 const buttonPointerEvents = ref('auto');
+const hideButtons = ref(pomodoroStore.hideButtons);
 
 let sessionType = 'work'
+
+defineProps({
+  darkCover: {
+    type: Number
+  }
+});
 
 function pauseTimer() {
   clearInterval(timerInterval)
@@ -278,6 +293,9 @@ function setCircleDasharray() {
     pauseTimer()
     buttonText.value = 'Start'
     isStarted.value = false
+    if (sessionType == 'work') {
+      database.addPomodoro();
+    }
     if (sessionType === 'work' && pomodoroStore.showToast) showPopup("You've got a pomodoro!")
     else if (pomodoroStore.showToast) showPopup('Time to continue you work!')
     sessionType = sessionType == 'work' ? 'break' : 'work'
@@ -290,3 +308,4 @@ function setCircleDasharray() {
   circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`
 }
 </script>
+@/stores/config@/stores/databasee
