@@ -271,5 +271,3 @@ watch(
   }
 )
 </script>
-4772f9
-@/stores/config

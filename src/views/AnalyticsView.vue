@@ -71,16 +71,6 @@ function formatDate(date: Date): string {
 
 const database = useDatabase()
 
-const a = {
-  '2024-2-13': { pomodoros: 1, minutes: 120 },
-  '2024-2-12': { pomodoros: 4, minutes: 30 },
-  '2024-2-11': { pomodoros: 5, minutes: 12 },
-  '2024-2-10': { pomodoros: 6, minutes: 566 },
-  '2024-2-9': { pomodoros: 8, minutes: 43 },
-  '2024-2-8': { pomodoros: 4, minutes: 23 },
-  '2024-2-7': { pomodoros: 7, minutes: 433 }
-}
-
 for (let i = 6; i >= 0; i--) {
   const date = new Date()
   date.setDate(date.getDate() - i)

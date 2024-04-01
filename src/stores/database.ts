@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { watch, ref, onMounted, type Ref } from 'vue';
+import { ref, onMounted, type Ref } from 'vue';
 import { useConfig } from './config';
 
 

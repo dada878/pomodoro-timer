@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PomodoroTimerView from '../views/PomodoroView.vue';
 import SettingsView from '../views/SettingsView.vue';
-import StopwatchViewVue from '@/views/StopwatchView.vue';
 import AnalyticsViewVue from '@/views/AnalyticsView.vue';
 
 const router = createRouter({
@@ -16,11 +15,6 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
-    },
-    {
-      path: '/stopwatch',
-      name: 'stopwatch',
-      component: StopwatchViewVue
     },
     {
       path: '/analytics',
