@@ -6,33 +6,96 @@
         <div class="base-timer">
           <CircleShape :circle-dasharray="circleDasharray" :color="timerColor" />
           <p class="timer-label">{{ timerLabel }}</p>
-          <p class="timer-tip" v-show="isRelaxing">Relaxing</p>
+          <p class="timer-tip" v-show="sessionType === 'break'">Relaxing</p>
         </div>
         <div class="buttons-section">
-          <button
-            class="icon-button"
-            :class="{ 'button-outline': isStarted }"
-            @click="nextSession"
-            v-show="!hideButtons"
+          <ActionButton
+            :disabled="isStarted"
+            @click="timer.nextSession()"
+            v-show="!config.hideButtons"
           >
             <font-awesome-icon icon="fa-solid fa-forward" />
-          </button>
-          <button class="timer-button" :class="{ 'button-outline': isStarted }" @click="startTimer">
-            {{ buttonText }}
-          </button>
+          </ActionButton>
           <button
-            class="icon-button"
+            class="timer-button"
             :class="{ 'button-outline': isStarted }"
-            @click="resetTimer"
-            v-show="!hideButtons"
+            @click="timer.startTimer()"
           >
-            <font-awesome-icon icon="rotate-right" />
+            {{ isStarted ? 'Pause' : 'Start' }}
           </button>
+          <ActionButton
+            :disabled="isStarted"
+            @click="timer.resetTimer()"
+            v-show="!config.hideButtons"
+          >
+            <font-awesome-icon icon="fa-solid fa-rotate-right" />
+          </ActionButton>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue'
+import PopupWindow from '../components/layout/PopupWindow.vue'
+import CircleShape from '../components/pomodoro/CircleShape.vue'
+import ActionButton from '../components/pomodoro/ActionButton.vue'
+import { useConfig } from '@/stores/config'
+import { useTimer } from '@/stores/timer'
+
+const timer = useTimer()
+const config = useConfig()
+
+const sessionType = ref(timer.sessionType)
+const timerColor = ref(timer.sessionType === "work" ? '#4772f9' : '#f9a847')
+
+const timerLabel = ref(timer.timerLabel)
+const circleDasharray = ref(timer.circleDasharray)
+const isStarted = ref(timer.isStarted)
+const isPopupShown = ref(timer.isPopupShown)
+const popupContent = ref(timer.popupContent)
+
+onMounted(() => {
+  timer.initTimer()
+})
+
+watch(
+  () => timer.circleDasharray,
+  () => {
+    circleDasharray.value = timer.circleDasharray
+  }
+)
+
+watch(
+  () => timer.timerLabel,
+  () => {
+    timerLabel.value = timer.timerLabel
+  }
+)
+
+watch(
+  () => timer.isStarted,
+  () => {
+    isStarted.value = timer.isStarted
+  }
+)
+
+
+watch(
+  () => timer.sessionType,
+  () => {
+    sessionType.value = timer.sessionType
+    timerColor.value = sessionType.value === 'work' ? '#4772f9' : '#f9a847'
+  }
+)
+defineProps({
+  darkCover: {
+    type: Number
+  }
+})
+</script>
+
 <style scoped>
 .timer-container {
   display: flex;
@@ -99,173 +162,4 @@
     color 350ms,
     background-color 350ms;
 }
-
-.icon-button {
-  border: 1.5px solid var(--color-primary);
-  background-color: transparent;
-  color: var(--color-primary);
-  outline: none;
-  padding: 0.5rem;
-  border-radius: 5rem;
-  width: 2.3rem;
-  height: 2.3rem;
-  font-size: 1rem;
-  scale: 1.5;
-  opacity: v-bind(buttonOpacity);
-  transition:
-    opacity 200ms,
-    border-color 350ms,
-    color 350ms;
-  pointer-events: v-bind(buttonPointerEvents);
-}
 </style>
-<script setup lang="ts">
-import { ref, type Ref } from 'vue'
-import sound from '../assets/sound.wav'
-import PopupWindow from '../components/layout/PopupWindow.vue'
-import CircleShape from '../components/pomodoro/CircleShape.vue'
-import { useConfig } from '@/stores/config'
-import { useDatabase } from '@/stores/database'
-
-const pomodoroStore = useConfig()
-const database = useDatabase()
-
-const WORK_TIME = pomodoroStore.workTime
-const BREAK_TIME = pomodoroStore.breakTime
-const SECOND = 60
-const FULL_DASH_ARRAY = 283
-
-let timeLimit = WORK_TIME * SECOND
-let timePassed = -1
-let timeLeft = WORK_TIME * SECOND
-
-const isRelaxing = ref(false)
-const isStarted = ref(false)
-const buttonText = ref('Start')
-const timerColor = ref('#4772f9')
-const circleDasharray: Ref<string> = ref(`${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`)
-const buttonOpacity = ref(1)
-const buttonPointerEvents = ref('auto')
-const hideButtons = ref(pomodoroStore.hideButtons)
-
-let sessionType = 'work'
-
-defineProps({
-  darkCover: {
-    type: Number
-  }
-})
-
-function pauseTimer() {
-  clearInterval(timerInterval)
-}
-
-function calculateTimeFraction() {
-  const rawTimeFraction = timeLeft / timeLimit
-  return rawTimeFraction - (1 / timeLimit) * (1 - rawTimeFraction)
-}
-
-let timerInterval: any = null
-
-const isPopupShown = ref(false)
-const popupContent = ref('Time to relax!')
-
-function showPopup(content: string) {
-  isPopupShown.value = true
-  popupContent.value = content
-  setTimeout(() => {
-    isPopupShown.value = false
-  }, 4000)
-}
-
-function startTimerInterval() {
-  timerInterval = setInterval(() => {
-    setCircleDasharray()
-  }, 1000)
-}
-
-function resetTimer() {
-  pauseTimer()
-  buttonText.value = 'Start'
-  isStarted.value = false
-  buttonOpacity.value = 1
-  buttonPointerEvents.value = 'auto'
-  initTimer()
-}
-
-function nextSession() {
-  pauseTimer()
-  buttonText.value = 'Start'
-  isStarted.value = false
-  buttonOpacity.value = 1
-  buttonPointerEvents.value = 'auto'
-  sessionType = sessionType == 'work' ? 'break' : 'work'
-  initTimer()
-}
-
-function startTimer() {
-  if (isStarted.value === false) {
-    buttonText.value = 'Pause'
-    isStarted.value = true
-    buttonOpacity.value = 0.3
-    buttonPointerEvents.value = 'none'
-    startTimerInterval()
-  } else {
-    buttonText.value = 'Start'
-    isStarted.value = false
-    buttonOpacity.value = 1
-    buttonPointerEvents.value = 'auto'
-    pauseTimer()
-  }
-}
-
-function formatTime(time: number) {
-  const minutes = Math.floor(time / 60)
-  let seconds: number | string = time % 60
-  if (seconds < 10) seconds = `0${seconds}`
-  if (minutes < 10) return `0${minutes}:${seconds}`
-  return `${minutes}:${seconds}`
-}
-
-const timerLabel = ref(formatTime(timeLeft))
-
-function initTimer() {
-  timePassed = -1
-  timeLimit = sessionType === 'work' ? WORK_TIME * SECOND : BREAK_TIME * SECOND
-  timeLeft = timeLimit
-  timerLabel.value = formatTime(timeLeft)
-  circleDasharray.value = `${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`
-  isRelaxing.value = sessionType === 'break'
-  timerColor.value = sessionType === 'work' ? '#4772f9' : '#f9a847'
-}
-
-function playSound() {
-  if (!pomodoroStore.enableSound) return
-  const audio = new Audio(sound)
-  audio.volume = 0.1
-  audio.play()
-}
-
-function setCircleDasharray() {
-  timePassed = timePassed += 1
-  timeLeft = timeLimit - timePassed
-  timerLabel.value = formatTime(timeLeft)
-  if (timeLeft == 0) {
-    pauseTimer()
-    buttonText.value = 'Start'
-    isStarted.value = false
-    if (sessionType == 'work') {
-      database.addPomodoro()
-    }
-    if (sessionType === 'work' && pomodoroStore.showToast) showPopup("You've got a pomodoro!")
-    else if (pomodoroStore.showToast) showPopup('Time to continue you work!')
-    sessionType = sessionType == 'work' ? 'break' : 'work'
-    initTimer()
-    playSound()
-    buttonOpacity.value = 1
-    buttonPointerEvents.value = 'auto'
-    if (pomodoroStore.autoStart) startTimer()
-  }
-  circleDasharray.value = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`
-}
-</script>

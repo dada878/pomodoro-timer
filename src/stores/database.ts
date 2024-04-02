@@ -1,20 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, onMounted, type Ref } from 'vue';
 import { useConfig } from './config';
-
+import { formatDate } from '../utils/date';
 
 interface Database {
   [date: string]: {
     pomodoros: number,
     minutes: number
   }
-}
-
-function formatDate(date: Date) : string {
-  const day = date.getDate()
-  const month = date.getMonth() + 1
-  const year = date.getFullYear()
-  return `${year}-${month}-${day}`
 }
 
 export const useDatabase = defineStore('database', () => {

@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import { useDatabase } from '@/stores/database'
+import { formatDate } from '@/utils/date';
 import {
   Chart as ChartJS,
   Title,
@@ -61,13 +62,6 @@ const lastWeekMinutes: Ref<Array<number>> = ref([])
 const lastWeedTotalMinutes: Ref<number> = ref(0)
 
 const lastWeekDates: Ref<Array<string>> = ref([])
-
-function formatDate(date: Date): string {
-  const day = date.getDate()
-  const month = date.getMonth() + 1
-  const year = date.getFullYear()
-  return `${year}-${month}-${day}`
-}
 
 const database = useDatabase()
 
