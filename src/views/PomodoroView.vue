@@ -122,8 +122,8 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import sound from '../assets/sound.wav'
-import PopupWindow from '../components/PopupWindow.vue'
-import CircleShape from '../components/CircleShape.vue'
+import PopupWindow from '../components/layout/PopupWindow.vue'
+import CircleShape from '../components/pomodoro/CircleShape.vue'
 import { useConfig } from '@/stores/config'
 import { useDatabase } from '@/stores/database'
 

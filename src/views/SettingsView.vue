@@ -21,8 +21,8 @@
 <script lang="ts" setup>
 import { useConfig } from '@/stores/config'
 import { ref, watch, type Ref } from 'vue'
-import FormInput from '@/components/FormInput.vue'
-import FormSwitch from '@/components/FormSwitch.vue'
+import FormInput from '@/components/settings/FormInput.vue'
+import FormSwitch from '@/components/settings/FormSwitch.vue'
 
 // get the store
 const pomodoroStore = useConfig()

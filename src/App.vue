@@ -5,10 +5,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import MobileSidebar from './components/MobileSidebar.vue';
+import MobileSidebar from './components/layout/MobileSidebar.vue';
 
 import { onMounted, ref } from 'vue';
-import RouterContainer from './components/RouterContainer.vue';
+import RouterContainer from './components/layout/RouterContainer.vue';
 
 const darkCover = ref(1);
 
