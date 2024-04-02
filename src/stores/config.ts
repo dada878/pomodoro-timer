@@ -21,7 +21,7 @@ export const useConfig = defineStore('config', () => {
     };
     localStorage.setItem('config', JSON.stringify(data));
   };
-
+  
   const loadFromLocalStorage = () => {
     const data = localStorage.getItem('config');
     if (data) {
@@ -39,6 +39,7 @@ export const useConfig = defineStore('config', () => {
     loadFromLocalStorage();
   });
 
+  // Save to local storage when any of the values change
   watch([workTime, breakTime, enableSound, autoStart, showToast, hideButtons], () => {
     saveToLocalStorage();
   });

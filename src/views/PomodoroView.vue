@@ -1,37 +1,30 @@
 <template>
-  <div>
-    <div class="timer-container">
-      <div class="timer">
-        <PopupWindow :show-popup="isPopupShown" :content="popupContent" />
-        <div class="base-timer">
-          <CircleShape :circle-dasharray="circleDasharray" :color="timerColor" />
-          <p class="timer-label">{{ timerLabel }}</p>
-          <p class="timer-tip" v-show="sessionType === 'break'">Relaxing</p>
-        </div>
-        <div class="buttons-section">
-          <ActionButton
-            :disabled="isStarted"
-            @click="timer.nextSession()"
-            v-show="!config.hideButtons"
-          >
-            <font-awesome-icon icon="fa-solid fa-forward" />
-          </ActionButton>
-          <button
-            class="timer-button"
-            :class="{ 'button-outline': isStarted }"
-            @click="timer.startTimer()"
-          >
-            {{ isStarted ? 'Pause' : 'Start' }}
-          </button>
-          <ActionButton
-            :disabled="isStarted"
-            @click="timer.resetTimer()"
-            v-show="!config.hideButtons"
-          >
-            <font-awesome-icon icon="fa-solid fa-rotate-right" />
-          </ActionButton>
-        </div>
+  <div class="timer-container">
+    <div class="timer">
+      <!-- pomodoro timer -->
+      <div class="base-timer">
+        <CircleShape :circle-dasharray="circleDasharray" :color="timerColor" />
+        <p class="timer-label">{{ timerLabel }}</p>
+        <p class="timer-tip" v-show="sessionType === 'break'">Relaxing</p>
       </div>
+      <!-- control penal -->
+      <div class="buttons-section">
+        <ActionButton :disabled="isStarted" @click="timer.skip()" v-show="!config.hideButtons">
+          <font-awesome-icon icon="fa-solid fa-forward" />
+        </ActionButton>
+        <button
+          class="timer-button"
+          :class="{ 'button-outline': isStarted }"
+          @click="timer.start()"
+        >
+          {{ isStarted ? 'Pause' : 'Start' }}
+        </button>
+        <ActionButton :disabled="isStarted" @click="timer.reset()" v-show="!config.hideButtons">
+          <font-awesome-icon icon="fa-solid fa-rotate-right" />
+        </ActionButton>
+      </div>
+      <!-- popup window -->
+      <PopupWindow :show-popup="isPopupShown" :content="popupContent" />
     </div>
   </div>
 </template>
@@ -42,38 +35,47 @@ import PopupWindow from '../components/layout/PopupWindow.vue'
 import CircleShape from '../components/pomodoro/CircleShape.vue'
 import ActionButton from '../components/pomodoro/ActionButton.vue'
 import { useConfig } from '@/stores/config'
+import { useDatabase } from '@/stores/database'
+import sound from '../assets/sound.wav'
 import { useTimer } from '@/stores/timer'
+import { formatTime } from '@/utils/time'
+
+function getSessionColor(sessionType: string) {
+  return sessionType === 'work' ? '#4772f9' : '#f9a847'
+}
 
 const timer = useTimer()
+const database = useDatabase()
 const config = useConfig()
 
 const sessionType = ref(timer.sessionType)
-const timerColor = ref(timer.sessionType === "work" ? '#4772f9' : '#f9a847')
-
-const timerLabel = ref(timer.timerLabel)
+const timerColor = ref(getSessionColor(timer.sessionType))
+const timerLabel = ref(formatTime(timer.timeLeft))
 const circleDasharray = ref(timer.circleDasharray)
 const isStarted = ref(timer.isStarted)
-const isPopupShown = ref(timer.isPopupShown)
-const popupContent = ref(timer.popupContent)
+const isPopupShown = ref(false)
+const popupContent = ref('')
 
+function showPopup(content: string) {
+  isPopupShown.value = true
+  popupContent.value = content
+  setTimeout(() => {
+    isPopupShown.value = false
+  }, 4000)
+}
+
+function playSound() {
+  const audio = new Audio(sound)
+  audio.volume = 0.1
+  audio.play()
+}
+
+// init timer when component is mounted because we it's need to access local storage
 onMounted(() => {
-  timer.initTimer()
+  timer.init()
 })
 
-watch(
-  () => timer.circleDasharray,
-  () => {
-    circleDasharray.value = timer.circleDasharray
-  }
-)
-
-watch(
-  () => timer.timerLabel,
-  () => {
-    timerLabel.value = timer.timerLabel
-  }
-)
-
+// sync isStarted with timer.isStarted
 watch(
   () => timer.isStarted,
   () => {
@@ -81,14 +83,35 @@ watch(
   }
 )
 
+// sync timeLeft with timer.timeLeft and check if the timer is finished
+watch(
+  () => timer.timeLeft,
+  () => {
+    if (timer.timeLeft === 0) {
+      timer.pause()
+      if (sessionType.value == 'work') {
+        database.addPomodoro()
+      }
+      if (sessionType.value === 'work' && config.showToast) showPopup("You've got a pomodoro!")
+      else if (config.showToast) showPopup('Time to continue you work!')
+      timer.skip()
+      if (config.enableSound) playSound()
+      if (config.autoStart) timer.start()
+    }
+    timerLabel.value = formatTime(timer.timeLeft)
+    circleDasharray.value = timer.circleDasharray
+  }
+)
 
+// sync sessionType with timer.sessionType
 watch(
   () => timer.sessionType,
   () => {
     sessionType.value = timer.sessionType
-    timerColor.value = sessionType.value === 'work' ? '#4772f9' : '#f9a847'
+    timerColor.value = getSessionColor(timer.sessionType)
   }
 )
+
 defineProps({
   darkCover: {
     type: Number

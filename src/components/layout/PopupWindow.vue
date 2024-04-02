@@ -15,6 +15,7 @@ const opacity = ref(0)
 const transformY = ref('-50%')
 const isShown = ref(props.showPopup)
 
+// when showPopup changes to true, show the popup and hide it after 4 seconds
 watch(
   () => props.showPopup,
   (showPopup) => {
@@ -31,6 +32,7 @@ watch(
   }
 )
 </script>
+
 <style scoped>
 .popup {
   position: fixed;

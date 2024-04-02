@@ -5,6 +5,7 @@
     </div>
   </div>
 </template>
+
 <style scoped>
 .container {
   height: 100%;
@@ -12,6 +13,7 @@
   opacity: v-bind(darkCover);
 }
 </style>
+
 <script setup lang="ts">
 const props = defineProps({
   darkCover: {
@@ -19,6 +21,8 @@ const props = defineProps({
     required: true
   }
 })
+
+// close the sidebar when the user clicks on the dark cover (the area outside the sidebar)
 function handelClick() {
   if (props.darkCover <= 0) return
   const view = document.getElementById('view')

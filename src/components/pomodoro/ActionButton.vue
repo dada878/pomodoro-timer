@@ -14,6 +14,7 @@ const props = defineProps({
 const opacity = ref(1);
 const pointerEvents = ref('auto');
 
+// Change the opacity and pointer-events of the button when it is disabled
 watch(() => props.disabled, (value) => {
   opacity.value = value ? 0.3 : 1;
   pointerEvents.value = value ? 'none' : 'auto';

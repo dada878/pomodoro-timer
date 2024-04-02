@@ -12,9 +12,10 @@ import RouterContainer from './components/layout/RouterContainer.vue';
 
 const darkCover = ref(1);
 
+// Darken the background when the sidebar is opened
 onMounted(() => {
   const view = document.getElementById('view');
-  view?.scrollTo(window.innerWidth, 0);
+  view?.scrollTo(window.innerWidth, 0); // scroll to the rightmost view (sso that use can't see the sidebar)
   view?.addEventListener('scroll', (e) => {
     const scrollX = (e.target as HTMLDivElement).scrollLeft;
     const sidebarWidth = window.innerWidth * 0.6;
@@ -32,6 +33,7 @@ function toggleFullScreen() {
   }
 }
 </script>
+
 <style>
 body {
   color: #fff;

@@ -13,9 +13,12 @@ interface Database {
 export const useDatabase = defineStore('database', () => {
   const config = useConfig();
   const data : Ref<Database> = ref({});
+  
   const saveToLocalStorage = () => {
     localStorage.setItem('database', JSON.stringify(data.value))
   }
+
+  // Load data from local storage
   onMounted(() => {
     const savedData = localStorage.getItem('database')
     if (savedData) {
@@ -31,6 +34,7 @@ export const useDatabase = defineStore('database', () => {
       }
     }
   }
+
   function addPomodoro() {
     const today = formatDate(new Date());
     init(today);
@@ -38,10 +42,12 @@ export const useDatabase = defineStore('database', () => {
     data.value[today].minutes += config.workTime;
     saveToLocalStorage();
   }
+
   function getData(date: string) {
     init(date);
     return data.value[date];
   }
+
   return {
     addPomodoro,
     getData

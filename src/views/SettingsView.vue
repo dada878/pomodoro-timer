@@ -24,16 +24,13 @@ import { ref, watch, type Ref } from 'vue'
 import FormInput from '@/components/settings/FormInput.vue'
 import FormSwitch from '@/components/settings/FormSwitch.vue'
 
-// get the store
-const pomodoroStore = useConfig()
-
-// create local state for workTime, breakTime, enableSound, and autoStart
-const workTime = ref(pomodoroStore.workTime)
-const breakTime = ref(pomodoroStore.breakTime)
-const enableSound = ref(pomodoroStore.enableSound)
-const autoStart = ref(pomodoroStore.autoStart)
-const showToast = ref(pomodoroStore.showToast)
-const hideButtons = ref(pomodoroStore.hideButtons)
+const config = useConfig()
+const workTime = ref(config.workTime)
+const breakTime = ref(config.breakTime)
+const enableSound = ref(config.enableSound)
+const autoStart = ref(config.autoStart)
+const showToast = ref(config.showToast)
+const hideButtons = ref(config.hideButtons)
 
 function watchAndSyncState<T>(
   stateRef: Ref<T>,
@@ -48,17 +45,18 @@ function watchAndSyncState<T>(
   watch(
     () => stateRef.value,
     (newVal) => {
-      ;(pomodoroStore[storeProperty] as T) = newVal
+      ;(config[storeProperty] as T) = newVal
     }
   )
   watch(
-    () => pomodoroStore[storeProperty],
+    () => config[storeProperty],
     (newVal) => {
       stateRef.value = newVal as T
     }
   )
 }
 
+// watch all the input states and sync with the store
 watchAndSyncState(workTime, 'workTime')
 watchAndSyncState(breakTime, 'breakTime')
 watchAndSyncState(enableSound, 'enableSound')

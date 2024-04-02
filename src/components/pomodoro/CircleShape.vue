@@ -24,7 +24,6 @@ defineProps({
 </script>
 
 <style scoped>
-
 .timer {
   width: 90vw;
   --color-primary: v-bind(color);
