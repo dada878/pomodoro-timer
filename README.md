@@ -1,5 +1,5 @@
 # Pomodoro Timer
-A simple Pomodoro timer with a great view in the mobile client (currently only supporting small-sized screens).
+A simple Pomodoro timer with a great view in the mobile client (currently only supporting small-sized screens). Then you can swipe from left to right in the app to open sidebar.
 
 p.s. some of the setting options have not been completely implemented.
 
