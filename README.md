@@ -3,6 +3,8 @@ A simple Pomodoro timer with a great view in the mobile client (currently only s
 
 p.s. some of the setting options have not been completely implemented.
 
+https://pomodoro-timer-dada878.vercel.app/
+
 <table>
     <tr>
         <td><img src="./src/assets/preview/countdown.png"></td>
