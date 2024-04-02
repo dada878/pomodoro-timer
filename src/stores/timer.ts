@@ -12,7 +12,7 @@ export const useTimer = defineStore('timer', () => {
   const timeLimit = ref(config.workTime * SECONDS_PRE_MINUTE)
   const timePassed = ref(-1)
   const timeLeft = ref(config.workTime * SECONDS_PRE_MINUTE)
-  const timerInterval: Ref<NodeJS.Timeout | null> = ref(null)
+  const timerInterval: Ref<ReturnType<typeof setInterval> | null> = ref(null)
   const isStarted = ref(false)
   const circleDasharray = ref(`${FULL_DASH_ARRAY} ${FULL_DASH_ARRAY}`)
   const sessionType = ref('work')
@@ -30,7 +30,9 @@ export const useTimer = defineStore('timer', () => {
 
   function pause() {
     isStarted.value = false
-    clearInterval(timerInterval.value as NodeJS.Timeout)
+    if (typeof timerInterval.value === 'number') {
+      clearInterval(timerInterval.value)
+    }
   }
 
   function reset() {
