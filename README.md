@@ -1,5 +1,5 @@
 # Pomodoro Timer
-A simple pomodoro timer with a great view in the mobile client.
+A simple Pomodoro timer with a great view in the mobile client (currently only supporting small-sized screens).
 
 p.s. some of the setting options have not been completely implemented.
 
