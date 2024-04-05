@@ -3,7 +3,7 @@ A simple Pomodoro timer with a great view in the mobile client (currently only s
 
 p.s. some of the setting options have not been completely implemented.
 
-https://pomodoro-timer-dada878.vercel.app/
+https://timer.dada878.com/
 
 <table>
     <tr>
